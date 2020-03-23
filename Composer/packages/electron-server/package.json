@@ -94,14 +94,19 @@
   },
   "build": {
     "asar": true,
+    "appId": "com.microsoft.botframework.composer",
+    "productName": "Bot Framework Composer",
+    "copyright": "Copyright © 2020 Microsoft Corporation",
+    "electronDownload": {
+      "version": "8.0.2"
+    },
+    "directories": {
+      "output": "dist"
+    },
     "asarUnpack": [
       "build/assets/**",
       "build/templates/**"
     ],
-    "directories": {
-      "output": "dist"
-    },
-    "appId": "com.microsoft.botframework.composer",
     "files": [
       "./build/**",
       "!data.json",
@@ -162,8 +167,7 @@
         }
       ]
     },
-    "electronDownload": {
-      "version": "8.0.2"
-    }
+    "publish": null,
+    "remoteBuild": false
   }
 }
