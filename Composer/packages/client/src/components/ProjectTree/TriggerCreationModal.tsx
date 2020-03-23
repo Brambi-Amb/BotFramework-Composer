@@ -29,6 +29,8 @@ import {
   getActivityTypes,
   getMessageTypes,
   regexRecognizerKey,
+  ValueRecognizerKey,
+  recognizerSet,
 } from '../../utils/dialogUtil';
 import { addIntent } from '../../utils/luUtil';
 import { StoreContext } from '../../store';
@@ -101,12 +103,18 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
   const { dialogs, luFiles, projectId } = state;
   const luFile = luFiles.find(lu => lu.id === dialogId);
   const dialogFile = dialogs.find(dialog => dialog.id === dialogId);
-  const isRegEx = get(dialogFile, 'content.recognizer.$type', '') === regexRecognizerKey;
+  const [recognizerType, setRecognizerType] = useState(ValueRecognizerKey);
+  const recognizerTypes: IDropdownOption[] = get(
+    dialogFile,
+    `content.recognizer.recognizers[0].recognizers['en-us'].recognizers`,
+    []
+  ).map(r => recognizerSet[r.$type]);
+  const isRegEx = recognizerType === regexRecognizerKey;
   const regexIntents = get(dialogFile, 'content.recognizer.intents', []);
-  const isNone = !get(dialogFile, 'content.recognizer');
+  const isNone = recognizerType === ValueRecognizerKey;
   const initialFormData: TriggerFormData = {
     errors: {},
-    $type: isNone ? '' : intentTypeKey,
+    $type: '',
     specifiedType: '',
     intent: '',
     triggerPhrases: '',
@@ -157,6 +165,11 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
     setFormData({ ...formData, regexEx: pattern });
   };
 
+  const onChangeRecognizerType = (e, type) => {
+    setRecognizerType(type.key);
+    setFormData({ ...initialFormData, $type: type.key === ValueRecognizerKey ? '' : intentTypeKey });
+  };
+
   const onTriggerPhrasesChange = (body: string) => {
     const errors = formData.errors;
     const content = '#' + formData.intent + '\n' + body;
@@ -196,13 +209,23 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
       <div css={dialogWindow}>
         <Stack>
           <Dropdown
+            label={formatMessage('What is the recognizer type of this trigger?')}
+            options={recognizerTypes}
+            styles={dropdownStyles}
+            onChange={onChangeRecognizerType}
+            data-testid={'triggerRecognizerTypesDropDown'}
+            defaultSelectedKey={recognizerType}
+            required
+          />
+          <Dropdown
             label={formatMessage('What is the type of this trigger?')}
             options={triggerTypeOptions}
             styles={dropdownStyles}
             onChange={onSelectTriggerType}
+            selectedKey={formData.$type}
             errorMessage={formData.errors.$type}
             data-testid={'triggerTypeDropDown'}
-            defaultSelectedKey={formData.$type}
+            required
           />
           {showEventDropDown && (
             <Dropdown
@@ -213,6 +236,7 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
               onChange={onSelectSpecifiedTypeType}
               errorMessage={formData.errors.specifiedType}
               data-testid={'eventTypeDropDown'}
+              required
             />
           )}
           {showActivityDropDown && (
@@ -224,6 +248,7 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
               onChange={onSelectSpecifiedTypeType}
               errorMessage={formData.errors.specifiedType}
               data-testid={'activityTypeDropDown'}
+              required
             />
           )}
           {showMessageDropDown && (
@@ -235,6 +260,7 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
               onChange={onSelectSpecifiedTypeType}
               errorMessage={formData.errors.specifiedType}
               data-testid={'messageTypeDropDown'}
+              required
             />
           )}
           {showIntentName && (
@@ -248,6 +274,7 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
               onChange={onNameChange}
               errorMessage={formData.errors.intent}
               data-testid="TriggerName"
+              required
             />
           )}
 
@@ -257,6 +284,7 @@ export const TriggerCreationModal: React.FC<TriggerCreationModalProps> = props =
               onChange={onChangeRegEx}
               errorMessage={formData.errors.regexEx}
               data-testid={'RegExDropDown'}
+              required
             />
           )}
           {showTriggerPhrase && <Label>{formatMessage('Trigger phrases')}</Label>}
