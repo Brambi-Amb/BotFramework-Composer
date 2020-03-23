@@ -1,12 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { resolve } from 'path';
-import { start } from '@bfc/server';
-import { mkdirp } from 'fs-extra';
 import { app, BrowserWindow } from 'electron';
-
-import settings from './settings';
 
 function main() {
   console.log('Starting electron app');
@@ -21,23 +16,21 @@ function main() {
   });
 
   // and load the index.html of the app.
-  const CONTENT_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000/' : 'http://localhost:5000/';
+  const CONTENT_URL = 'http://localhost:3000/home';
   console.log('Loading project from: ', CONTENT_URL);
   win.loadURL(CONTENT_URL);
 
   win.maximize();
   win.show();
-}
 
-async function createTempStore() {
-  const appDataBasePath: string = process.env.APPDATA || process.env.HOME || '';
-  const compserAppDataDirectoryName = 'BotFrameworkComposer';
-  const composerAppDataPath: string = resolve(appDataBasePath, compserAppDataDirectoryName);
-
-  settings.appDataPath = resolve(composerAppDataPath, 'data.json');
-  settings.runtimeFolder = resolve(__dirname, 'templates');
-
-  await mkdirp(composerAppDataPath);
+  win.once('ready-to-show', () => {
+    // only show if the main window still hasn't loaded
+    if (!win.isVisible()) {
+      win.show();
+    } else {
+      win.hide();
+    }
+  });
 }
 
 async function run() {
@@ -63,11 +56,10 @@ async function run() {
   console.log('App ready');
 
   console.log('Creating temp store');
-  await createTempStore();
-  console.log(`Composer settings: ${JSON.stringify(settings, null, ' ')}`);
+  // await createTempStore();
+  // console.log(`Composer settings: ${JSON.stringify(settings, null, ' ')}`);
 
   console.log('Starting server');
-  await start();
   console.log('Beginning app start up');
 
   main();
