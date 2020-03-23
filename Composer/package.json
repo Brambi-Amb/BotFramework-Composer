@@ -107,6 +107,7 @@
     "wsrun": "^5.1.0"
   },
   "dependencies": {
+    "bf-lu": "https://botbuilder.myget.org/F/botbuilder-declarative/npm/@bfcomposer/bf-lu/-/@bfcomposer/bf-lu-1.1.8.tgz",
     "cross-env": "^6.0.3"
   }
 }
