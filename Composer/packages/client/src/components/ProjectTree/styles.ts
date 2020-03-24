@@ -3,7 +3,7 @@
 
 import { css } from '@emotion/core';
 import { FontWeights } from '@uifabric/styling';
-import { NeutralColors, FontSizes, SharedColors } from '@uifabric/fluent-theme';
+import { NeutralColors, FontSizes } from '@uifabric/fluent-theme';
 import { IButtonStyles } from 'office-ui-fabric-react/lib/Button';
 import { ICalloutContentStyles } from 'office-ui-fabric-react/lib/Callout';
 import { IGroupedListStyles } from 'office-ui-fabric-react/lib/GroupedList';
